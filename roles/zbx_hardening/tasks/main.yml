@@ -72,9 +72,14 @@
 - name: "Enabling Apache a2enmod header"
   shell: a2enmod headers
   register: result
-  notify: Restart apache
   failed_when: "'enabled' in result.stdout"
   ignore_errors: yes
+
+- name: "Restart Apache"
+  shell: apachectl configtest
+  register: apache_check
+  notify: Restart apache
+  failed_when: "'failed' in apache_check.stdout"
 
 - name: "Apply Firewall Rules"
   ufw:

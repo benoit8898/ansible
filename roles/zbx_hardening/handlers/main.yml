@@ -1,0 +1,4 @@
+---
+# handlers file for zbx_hardening
+- name: "Restart apache"
+  service: name=apache2 state=restarted

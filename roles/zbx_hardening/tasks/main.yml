@@ -1,0 +1,99 @@
+---
+# tasks file for zbx_hardening
+- name: "Check if the OS is Ubuntu"
+  fail:
+    msg: This Ansible Playbook only works on Zabbix environment in Ubuntu.
+  when: ansible_facts['os_family'] != "Debian"
+
+- name: "Check To See if Apache2 is stalled"
+  package:
+    name: apache2
+    state: present
+  check_mode: false
+
+- name: "Check for mods-enabled ssl.conf"
+  stat:
+    path: /etc/apache2/mods-enabled/ssl.conf
+  register: path_sslconf
+
+- name: report if ssl.conf file exists
+  debug:
+    msg: "/etc/apache2/mods-enabled/ssl.conf does not exists"
+  when: not path_sslconf.stat.exists
+
+- name: "Check for 000-default.conf"
+  stat:
+    path: /etc/apache2/sites-enabled/default-ssl.conf
+  register: path_defaultconf
+
+- name: "Failed when confs file not exists"
+  debug:
+    msg: "/etc/apache2/sites-enabled/default_ssl.conf  or directory does not exists"
+  when: not path_defaultconf.stat.exists or not path_sslconf.stat.exists
+
+- name: "SSL Module enabled only if they are not exisit"
+  shell: a2enmod ssl
+  when: not path_sslconf.stat.exists
+
+- name: "Site enabled default conf only if they are not exisit"
+  shell: a2ensite default-ssl.conf
+  when: not path_defaultconf.stat.exists
+
+- name: "Disable CBC-mode ciphers in Apache ssl.conf"
+  lineinfile:
+    backup: yes
+    path:  /etc/apache2/mods-enabled/ssl.conf
+    regexp: "{{ item.regexp }}"
+    firstmatch: yes
+    insertbefore: '</IfModule>'
+    line: "{{ item.line }}"
+    #validate: "apachectl configtest"
+    # backrefs: yes (Uncommit this only if you dont want the umatch add to the file
+  loop:
+    - { regexp: 'SSLCipherSuite', line: "\tSSLCipherSuite ALL:!RSA:!CAMELLIA:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS:!RC4:!SHA1:!SHA256:!SHA384" }
+    - { regexp: 'SSLProtocol', line: "\tSSLProtocol all -SSLv3 -TLSv1 -TLSv1.1" }
+    - { regexp: '#SSLHonorCipherOrder', line: "\tSSLHonorCipherOrder on" }
+    - { regexp: 'SSLCompression', line: "\tSSLCompression off" }
+    - { regexp: 'SSLSessionTickets', line: "\tSSLSessionTickets off" }
+    - { regexp: 'SSLUseStapling', line: "\tSSLUseStapling on" }
+    - { regexp: 'SSLStaplingResponderTimeout', line: "\tSSLStaplingResponderTimeout 5" }
+    - { regexp: 'SSLStaplingReturnResponderErrors', line: "\tSSLStaplingReturnResponderErrors off" }
+    - { regexp: 'SSLStaplingCache', line: "\tSSLStaplingCache\tshmcb:/var/run/ocsp(128000)" }
+
+- name: "Enforcing HSTS in default-ssl.conf"
+  blockinfile:
+    backup: yes
+    path: /etc/apache2/sites-enabled/default-ssl.conf
+    insertbefore: '</VirtualHost>'
+    block: |
+      # Enforcing HSTS
+      Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
+- name: "Enabling Apache a2enmod header"
+  shell: a2enmod headers
+  register: result
+  notify: Restart apache
+  failed_when: "'enabled' in result.stdout"
+  ignore_errors: yes
+
+- name: "Apply Firewall Rules"
+  ufw:
+    policy: deny
+    direction: incoming
+  ufw:
+    policy: allow
+    direction: outgoing
+  ufw:
+    rule: allow
+    port: "{{ item.port }}"
+  loop:
+    - { port: '22' }
+    - { port: '80' }
+    - { port: '443' }
+    - { port: '7070' }
+    - { port: '10050' }
+    - { port: '10051' }
+
+- name: "Enable Firwall"
+  ufw:
+    state: enabled

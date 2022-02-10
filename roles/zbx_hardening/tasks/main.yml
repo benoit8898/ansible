@@ -3,7 +3,7 @@
 - name: "Check if the OS is Ubuntu"
   fail:
     msg: This Ansible Playbook only works on Zabbix environment in Ubuntu.
-  when: ansible_facts['os_family'] != "Debian"
+  when: ansible_facts['os_family'] != "{{ OS }}"
 
 - name: "Check To See if Apache2 is stalled"
   package:
@@ -13,22 +13,22 @@
 
 - name: "Check for mods-enabled ssl.conf"
   stat:
-    path: /etc/apache2/mods-enabled/ssl.conf
+    path: "{{ path_ssl }}"
   register: path_sslconf
 
 - name: report if ssl.conf file exists
   debug:
-    msg: "/etc/apache2/mods-enabled/ssl.conf does not exists"
+    msg: "{{ path_ssl }} does not exists"
   when: not path_sslconf.stat.exists
 
 - name: "Check for 000-default.conf"
   stat:
-    path: /etc/apache2/sites-enabled/default-ssl.conf
+    path: "{{ path_site }}"
   register: path_defaultconf
 
 - name: "Failed when confs file not exists"
   debug:
-    msg: "/etc/apache2/sites-enabled/default_ssl.conf  or directory does not exists"
+    msg: "{{ path_site }} does not exists"
   when: not path_defaultconf.stat.exists or not path_sslconf.stat.exists
 
 - name: "SSL Module enabled only if they are not exisit"
@@ -42,7 +42,7 @@
 - name: "Disable CBC-mode ciphers in Apache ssl.conf"
   lineinfile:
     backup: yes
-    path:  /etc/apache2/mods-enabled/ssl.conf
+    path:  "{{ path_ssl }}"
     regexp: "{{ item.regexp }}"
     firstmatch: yes
     insertbefore: '</IfModule>'
@@ -63,7 +63,7 @@
 - name: "Enforcing HSTS in default-ssl.conf"
   blockinfile:
     backup: yes
-    path: /etc/apache2/sites-enabled/default-ssl.conf
+    path: "{{ path_site }}"
     insertbefore: '</VirtualHost>'
     block: |
       # Enforcing HSTS

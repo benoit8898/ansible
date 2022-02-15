@@ -11,11 +11,11 @@
     state: present
   check_mode: false
 
-- name: "Check To See if zabbix-frontend is stalled"
+- name: "Check To See if zabbix-frontend is installed"
   package:
-    name: zabbix-frontend-php/
+    name: zabbix-frontend-php
     state: present
-  check_mode: true
+  check_mode: false
 
 - name: "Check for mods-enabled ssl.conf"
   stat:

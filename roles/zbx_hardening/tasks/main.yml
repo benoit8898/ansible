@@ -3,7 +3,7 @@
 - name: "Check if the OS is Ubuntu"
   fail:
     msg: This Ansible Playbook only works on Zabbix environment in Ubuntu.
-  when: ansible_facts['os_family'] != "{{ OS }}"
+  when: ansible_facts['os_family'] != OS
 
 - name: "Check To See if Apache2 is stalled"
   package:

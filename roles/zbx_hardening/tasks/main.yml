@@ -16,7 +16,7 @@
 - name: "Check To See if Apache2 is stalled"
   fail:
     msg: Apache is not installed.
-  when: ansible_facts['packages'] != abc
+  when: ansible_facts['packages'] != "apache2"
 
 - name: "Check To See if zabbix-frontend is installed"
   package:

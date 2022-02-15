@@ -11,7 +11,7 @@
 
 - name: Print the package facts
   debug:
-    var: ansible_facts.packages
+    var: ansible_facts.packages.name
     
 - name: "Check To See if Apache2 is Installed"
   fail:

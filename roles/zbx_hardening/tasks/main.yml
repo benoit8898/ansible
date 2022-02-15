@@ -19,7 +19,7 @@
 - name: "Failed When Zabbix is not installed"
   debug: 
     msg: "Zabbix NOT found"
-  fail when: "'zabbix' not in ansible_facts.packages"
+  when: "'zabbix' not in ansible_facts.packages"
 
 - name: "Check for mods-enabled ssl.conf"
   stat:

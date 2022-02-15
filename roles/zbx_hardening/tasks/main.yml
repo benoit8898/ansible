@@ -5,13 +5,13 @@
     msg: This Ansible Playbook only works on Zabbix environment in Ubuntu.
   when: ansible_facts['os_family'] != OS
 
-- name: Gather the package facts
-  package_facts:
-    manager: auto
+#- name: Gather the package facts
+#  package_facts:
+#    manager: auto
 
-- name: Print the package facts
-  debug:
-    var: ansible_facts.packages
+#- name: Print the package facts
+#  debug:
+#    var: ansible_facts.packages
     
 - name: "Check To See if Apache2 is Installed"
   fail:

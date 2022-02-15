@@ -5,9 +5,9 @@
     msg: This Ansible Playbook only works on Zabbix environment in Ubuntu.
   when: ansible_facts['os_family'] != OS
 
-#- name: Gather the package facts
-#  ansible.builtin.package_facts:
-#    manager: auto
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
 
 - name: Print the package facts
   ansible.builtin.debug:

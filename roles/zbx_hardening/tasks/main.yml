@@ -9,20 +9,20 @@
   package_facts:
     manager: auto
 
-#- name: Print the package facts
-#  debug:
-#    var: ansible_facts.packages
+- name: Print the package facts
+  debug:
+    var: ansible_facts.packages
     
 - name: "Check To See if Apache2 is Installed"
   fail:
     debug:
-    msg: "{{ ansible_facts.packages['apache2'] | length }} versions of apache2 is not installed!"
+    msg: "{{ ansible_facts.packages['apache2'] | length }} is not installed!"
   when: "'apache2' not in ansible_facts.packages"
 
 - name: "Check To See if Zabbix-front-end is Installed"
   fail:
     debug:
-    msg: "{{ ansible_facts.packages['zabbix-frontend-php'] | length }} versions of zabbix-frontend-php is not installed!"
+    msg: "{{ ansible_facts.packages['zabbix-frontend-php'] | length }} is not installed!"
   when: "'zabbix-frontend-php' not in ansible_facts.packages"
 
 - name: "Check To See if zabbix-frontend is installed"

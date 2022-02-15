@@ -10,16 +10,12 @@
     name: apache2
     state: present
   check_mode: false
-  
-- name: "Check To See if Zabbix is installed"
-  debug: 
-    msg: "Zabbix found"
-  when: "'zabbix' in ansible_facts.packages"
-  
-- name: "Failed When Zabbix is not installed"
-  debug: 
-    msg: "Zabbix NOT found"
-  when: "'zabbix' not in ansible_facts.packages"
+
+- name: "Check To See if zabbix-frontend is stalled"
+  package:
+    name: zabbix-frontend-php/
+    state: present
+  check_mode: true
 
 - name: "Check for mods-enabled ssl.conf"
   stat:

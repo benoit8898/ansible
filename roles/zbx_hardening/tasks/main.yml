@@ -9,13 +9,13 @@
   package:
     name: apache2
     state: present
-  check_mode: false
+  check_mode: true
 
 - name: "Check To See if zabbix-frontend is installed"
   package:
     name: zabbix-frontend-php
     state: present
-  check_mode: false
+  check_mode: true
 
 - name: "Check for mods-enabled ssl.conf"
   stat:

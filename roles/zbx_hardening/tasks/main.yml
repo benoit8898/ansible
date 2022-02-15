@@ -15,13 +15,11 @@
     
 - name: "Check To See if Apache2 is Installed"
   fail:
-    debug:
     msg: "Apache2 is not installed!"
   when: "'apache2' not in ansible_facts.packages"
 
 - name: "Check To See if Zabbix-front-end is Installed"
   fail:
-    debug:
     msg: "Zabbix-Frontend is not installed!"
   when: "'zabbix-frontend-php' not in ansible_facts.packages"
 

@@ -23,7 +23,7 @@
   fail:
     debug:
     msg: "{{ ansible_facts.packages['zabbix-frontend-php'] | length }} versions of zabbix-frontend-php is not installed!"
-   when: "'zabbix-frontend-php' not in ansible_facts.packages"
+  when: "'zabbix-frontend-php' not in ansible_facts.packages"
 
 - name: "Check To See if zabbix-frontend is installed"
   package:

@@ -5,18 +5,23 @@
     msg: This Ansible Playbook only works on Zabbix environment in Ubuntu.
   when: ansible_facts['os_family'] != OS
 
-- name: Gather the package facts
-  ansible.builtin.package_facts:
-    manager: auto
+#- name: Gather the package facts
+#  ansible.builtin.package_facts:
+#    manager: auto
 
-- name: Print the package facts
-  ansible.builtin.debug:
-    var: ansible_facts.packages
+#- name: Print the package facts
+#  ansible.builtin.debug:
+#    var: ansible_facts.packages
     
 - name: "Check To See if Apache2 is stalled"
   fail:
     msg: Apache is not installed.
   when: "'apache2' not in ansible_facts.packages"
+
+- name: "Check To See if Zabbix-front-end is stalled"
+  fail:
+    msg: Zabbix-front-end is not installed.
+  when: "'zabbix-frontend-php' not in ansible_facts.packages"
 
 - name: "Check To See if zabbix-frontend is installed"
   package:
